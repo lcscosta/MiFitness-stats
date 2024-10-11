@@ -16,6 +16,8 @@ class MiFitnessData:
     def loadcsv(self) -> np.array:
         with open(self.path, 'r') as f:
             data = list(csv.reader(f, delimiter=","))
+        for row in data[1::]:
+            row[4] = json.loads(row[4])
         return np.array(data[1::])
 
     def filter_key(self, key: str) -> np.array:
@@ -30,9 +32,14 @@ class MiFitnessData:
         for row in self.data:
             if str(row[2]) not in keys:
                 keys.append(str(row[2]))
-
         return np.array(keys)
 
+    def get_time_series_key(self, key: str) -> np.array:
+        filtered_data = self.filter_key(key)
+        time_series = []
+        for row in filtered_data:
+            time_series.append([str(row[2]),row[4]])
+        return np.array(time_series)
 
 mi = MiFitnessData(filepath)
 print(mi.data)
